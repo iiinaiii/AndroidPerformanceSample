@@ -16,8 +16,8 @@ class FragmentPerformanceTracer {
     private val fragmentTraceMap = WeakHashMap<Fragment, Trace>()
 
     companion object {
-        /** フレームサンプル数 */
-        private const val FRAME_SAMPLE_COUNT = "frame_sample_count"
+        /** フレーム数 */
+        private const val TOTAL_FRAME_COUNT = "total_frame_count"
         /** 遅いレンダリングだったフレーム数 */
         private const val SLOW_RENDERING_COUNT = "slow_rendering_count"
         /** 遅いレンダリングだったフレームの割合(%) */
@@ -76,7 +76,7 @@ class FragmentPerformanceTracer {
                 try {
                     val performanceTag = f.javaClass.simpleName
 
-                    var totalSampleNum = 0
+                    var totalFrameCount = 0
                     var slowRenderingCount = 0
                     var frozenFrameCount = 0
 
@@ -85,7 +85,7 @@ class FragmentPerformanceTracer {
                         for (i in 0 until totalDuration.size()) {
                             val frameDuration = totalDuration.keyAt(i)
                             val sampleNum = totalDuration.valueAt(i)
-                            totalSampleNum += sampleNum
+                            totalFrameCount += sampleNum
                             if (frameDuration > 700) {
                                 frozenFrameCount += sampleNum
                             }
@@ -96,9 +96,9 @@ class FragmentPerformanceTracer {
                         }
                     }
 
-                    // フレームサンプル数
-                    if (totalSampleNum > 0) {
-                        trace?.incrementMetric(FRAME_SAMPLE_COUNT, totalSampleNum.toLong())
+                    // フレーム数
+                    if (totalFrameCount > 0) {
+                        trace?.incrementMetric(TOTAL_FRAME_COUNT, totalFrameCount.toLong())
                     }
 
                     // 遅いレンダリングだったフレーム数
@@ -107,8 +107,8 @@ class FragmentPerformanceTracer {
                     }
 
                     // 遅いレンダリングだったフレームの割合
-                    if (totalSampleNum > 0 && slowRenderingCount > 0) {
-                        val slowRenderingRatio: Float = slowRenderingCount.toFloat() / totalSampleNum.toFloat() * 100
+                    if (totalFrameCount > 0 && slowRenderingCount > 0) {
+                        val slowRenderingRatio: Float = slowRenderingCount.toFloat() / totalFrameCount.toFloat() * 100
                         trace?.incrementMetric(SLOW_RENDERING_RATIO, slowRenderingRatio.toLong())
                     }
 
@@ -118,8 +118,8 @@ class FragmentPerformanceTracer {
                     }
 
                     // フリーズしたフレームだったフレームの割合
-                    if (totalSampleNum > 0 && frozenFrameCount > 0) {
-                        val frozenFrameRatio: Float = frozenFrameCount.toFloat() / totalSampleNum.toFloat() * 100
+                    if (totalFrameCount > 0 && frozenFrameCount > 0) {
+                        val frozenFrameRatio: Float = frozenFrameCount.toFloat() / totalFrameCount.toFloat() * 100
                         trace?.incrementMetric(FROZEN_FRAME_RATIO, frozenFrameRatio.toLong())
                     }
 
@@ -127,7 +127,7 @@ class FragmentPerformanceTracer {
                         Log.d("FirebasePerformance",
                                 (StringBuilder(81 + performanceTag.length))
                                         .append("sendScreenTrace name:").append(performanceTag)
-                                        .append(" $FRAME_SAMPLE_COUNT:").append(trace?.getLongMetric(FRAME_SAMPLE_COUNT))
+                                        .append(" $TOTAL_FRAME_COUNT:").append(trace?.getLongMetric(TOTAL_FRAME_COUNT))
                                         .append(" $SLOW_RENDERING_COUNT:").append(trace?.getLongMetric(SLOW_RENDERING_COUNT))
                                         .append(" $SLOW_RENDERING_RATIO:").append(trace?.getLongMetric(SLOW_RENDERING_RATIO))
                                         .append(" $FROZEN_FRAME_COUNT:").append(trace?.getLongMetric(FROZEN_FRAME_COUNT))
