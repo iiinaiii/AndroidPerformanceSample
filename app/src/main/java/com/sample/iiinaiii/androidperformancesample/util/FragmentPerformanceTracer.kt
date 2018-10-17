@@ -10,6 +10,9 @@ import com.google.firebase.perf.metrics.Trace
 import com.sample.iiinaiii.androidperformancesample.BuildConfig
 import java.util.*
 
+/**
+ * Firebase performance monitoring auto trace for Fragment
+ */
 class FragmentPerformanceTracer {
     private var callbacks: FragmentManager.FragmentLifecycleCallbacks? = null
     private val fragmentAggregatorMap = WeakHashMap<Fragment, FrameMetricsAggregator>()
